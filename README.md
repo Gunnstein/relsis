@@ -1,6 +1,6 @@
 # Relsis
 
-A package to perform structural reliability analaysis in python. The package provides an interface to define random variables and includes solvers to evaluate limit state functions. The solvers include FORM and monte carlo simulations with and without enhanced sampling schemes.
+A package to perform structural reliability analaysis in python. The package provides an interface to define random variables and includes solvers to evaluate limit state functions. The solvers include FORM and Monte Carlo simulations with and without enhanced sampling schemes. The Monte Carlo implementation allows for defining correlated variables.
 
 ## Table of Contents
 
