@@ -35,7 +35,9 @@ def get_sample_sobol(n_smp, n_dim, skip=17):
     ndarray
         (n_smp x n_dim) array with random sample points.
     """
-    return i4_sobol_generate(int(n_dim), int(n_smp), int(skip))
+    X = i4_sobol_generate(int(n_dim), int(n_smp), int(skip))
+    np.random.shuffle(X)
+    return X
 
 
 def i4_bit_hi1(n):

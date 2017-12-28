@@ -3,31 +3,30 @@ import numpy as np
 import matplotlib.pyplot as plt
 import relsis
 
+
+def ls(x):
+    return x[0] - x[1]
+
+
+
+
 if __name__ == '__main__':
-    ls = lambda x: x[0] - x[1]/x[2] + x[3]
-    rvs = [relsis.NormalRandomVariable(20., 4.),
-           relsis.NormalRandomVariable(10., 3.),
-           relsis.UniformRandomVariable(0.1, 3.),
-           relsis.NormalRandomVariable(1., 0.1)]
-    X, y = relsis.monte_carlo_simulation(ls, rvs, 1e6)
-    print relsis.get_reliability_index(float(y[y<=0].size)/float(y.size))
+    rvs = [relsis.NormalRandomVariable(30., 4.),
+           relsis.NormalRandomVariable(5., 3.),]
+    X, y = relsis.monte_carlo_simulation(ls, rvs, 1e6,
+                                         sampling_method='sobol')
+    pf = relsis.get_probability(y, y <= 0)
+    beta = relsis.get_reliability_index(pf)
 
-    S1, ST = relsis.find_sobol_sensitivity(ls, X, y)
-    print S1.sum()
+    res_form = relsis.form_solver(ls, rvs)
+    beta_form = res_form['beta']
+    alpha_form = res_form['alpha']
+    print beta, beta_form
+    S1, ST = relsis.find_sensitivity_sobol(ls, X, y)
+    print S1, ST
+    print sum(S1)
+    print alpha_form / np.linalg.norm(alpha_form, 2)
+    # c = plt.hist(y, 50, fc='w', ec='k', normed=True)
+    # plt.vlines(0, 0, c[0].max())
+    # plt.show(block=True)
 
-    res = relsis.find_sensitivity_morris(ls, rvs, 10, 4, 2)
-
-    s = "{0:>8s} {1:>8s}".format("Morris", "Sobol")
-    print "{0:17s}".format("First order")
-    print "=" * (len(s)+4)
-    print s
-    print "=" * (len(s)+4)
-    for S1m, S1s in zip(res['mu_star'], S1):
-        print "{0:>8.3f} {1:>8.3f}".format(S1m, S1s)
-    s = "{0:>8s} {1:>8s}".format("Morris", "Sobol")
-    print "{0:17s}".format("Total")
-    print "=" * (len(s)+4)
-    print s
-    print "=" * (len(s)+4)
-    for S1m, S1s in zip(res['sigma'], ST):
-        print "{0:>8.3f} {1:>8.3f}".format(S1m, S1s)

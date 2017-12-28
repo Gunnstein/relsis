@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from montecarlo import *
-from morris import *
 from randomvariables import *
-from sobol import *
-from utils import get_reliability_index
+from sensitivity import *
+from sampling import *
+from form import form_solver
+from utils import get_reliability_index, get_probability
 

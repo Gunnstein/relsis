@@ -2,7 +2,9 @@
 import numpy as np
 import scipy.stats as stats
 
-__all__ = ["RandomVariable", "NormalRandomVariable", "UniformRandomVariable"]
+__all__ = ["RandomVariable", "NormalRandomVariable", "UniformRandomVariable",
+           "LognormalRandomVariable"]
+
 
 class RandomVariable:
     """Base class for random variables.
@@ -29,6 +31,9 @@ class RandomVariable:
 
         """
         return self._rv.cdf(x)
+
+    def pdf(self, x):
+        return self._rv.pdf(x)
 
     def to_u(self, x):
         return stats.norm.ppf(self.cdf(x), loc=0., scale=1.)
@@ -84,11 +89,15 @@ class UniformRandomVariable(RandomVariable):
         return s.format(**self._kw)
 
 
-class LogNormalRandomVariable(RandomVariable):
+class LognormalRandomVariable(RandomVariable):
     def __init__(self, mean_ln_x, std_ln_x):
         """Lognormally distributed random variable.
 
-        Defined by the mean and standard deviation.
+        Defined by the mean (mu_ln_x) and standard deviation (std_ln_x) of
+        the logarithm of the lognormal varible. Let X be a lognormal variable,
+        Z be a standard normal distributed variable, then
+
+            X = exp(mu_ln_x + std_ln_x * Z)
 
         Arguments
         ---------
@@ -96,16 +105,15 @@ class LogNormalRandomVariable(RandomVariable):
             Mean and standard deviation of the variable logarithm of the random
             variable.
         """
-        self.mean = mean_ln_x
-        self.std = std_ln_x
-        var = np.log(1.+(std_ln_x/mean_ln_x)**2)
-        mean = np.log(mean_ln_x / np.sqrt(1+(std_ln_x/mean_ln_x)**2))
-        print mean, np.sqrt(var)
+        self.mean_ln_x = mean_ln_x
+        self.std_ln_x = std_ln_x
+        self.mean = np.exp(mean_ln_x)*np.sqrt(1. + (std_ln_x / mean_ln_x)**2)
+        self.std = mean_ln_x * np.sqrt(np.exp(std_ln_x**2) - 1.)
         self._rv = stats.lognorm(s=std_ln_x, scale=np.exp(mean_ln_x))
         self._kw = {"loc": self.mean, "scale": self.std}
 
     def __str__(self):
-        s = "Normaly distributed random variable, N({loc}, {scale})"
+        s = "Lognormally distributed random variable, LN({loc}, {scale})"
         return s.format(**self._kw)
 
 def SN_curve(S, dSc=71., m=5):
@@ -113,20 +121,27 @@ def SN_curve(S, dSc=71., m=5):
 
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
-    Vx = 0.30
-    std_ln_x = np.log(1.+(Vx)**2)
-    S = np.linspace(1, 200)
+    vx = .3
+    S = np.linspace(20, 2000)
     N = SN_curve(S)
     for s in [100., ]:
-        mean_ln_x = np.log(SN_curve(s))
-        std_ln_x = Vx * mean_ln_x
-        lnorm = LogNormalRandomVariable(mean_ln_x, std_ln_x)
-        np.logspace()
+        m = np.log(SN_curve(s))
+        mean_ln_x = m / (1. - 2.*vx)
+        std_ln_x = vx * mean_ln_x
+        lnorm = LognormalRandomVariable(mean_ln_x, std_ln_x)
+        ns = lnorm.pdf(N)
+        ns /= ns.max()
+        ns *= 100
+        ns += s
+        # ns = 10**np.log(ns)
 
-    # y = lnorm.rvs(size=100000)
-    # print np.log(y).std()
-    # print np.log(y).mean()
-    # plt.hist(np.log(y), 100)
     plt.semilogx(N, S)
+    plt.semilogx(N, ns)
+    lnorm = LognormalRandomVariable(10., 1.)
+    y = lnorm.rvs(size=100000)
+    print np.log(y).std()
+    print np.log(y).mean()
+    plt.figure()
+    plt.hist(np.log(y), 100)
     plt.show(block=True)
 

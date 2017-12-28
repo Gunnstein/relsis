@@ -10,6 +10,28 @@ def get_reliability_index(pf):
     return stats.norm.ppf(1-pf, loc=0., scale=1.)
 
 
+def get_probability(sample, cond):
+    """Find the probability that the sample fullfills conditions.
+
+    Example
+    -------
+    >>> y = np.array([-1., 0., 1., 2.])
+    >>> print get_probability(y, y<=0)
+    0.5
+
+    Arguments
+    ---------
+    sample : ndarray
+        A sample to check the condition on.
+
+    cond : ndarray
+        An array of bools with equal size to sample which decides wether or not
+        the sample point fulfills the conditions or not.
+
+    """
+    return float(sample[cond].size) / float(sample.size)
+
+
 def truncate_prob_dist(x):
     dtype = x.dtype
     epsneg = np.finfo(dtype).epsneg

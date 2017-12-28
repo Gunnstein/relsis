@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 import scipy.optimize
-import unittest
 import randomvariables
 
 
@@ -42,7 +41,7 @@ def form_solver(limit_state_function, random_variables):
     cons = dict(type='eq', fun=_ls)
     res = scipy.optimize.minimize(lambda u: np.linalg.norm(u, 2), u0,
                                   constraints=cons, method='SLSQP')
-    alpha = res['jac']
+    alpha = res['jac'] / np.linalg.norm(res['jac'], 2)
     beta = res['fun']
 
     if _ls(u0) <= 0:
@@ -50,21 +49,3 @@ def form_solver(limit_state_function, random_variables):
 
     result = dict(alpha=alpha, beta=beta)
     return result
-
-
-class TestFormSolver(unittest.TestCase):
-    def setUp(self):
-        self.random_variables = [randomvariables.NormalRandomVariable(20., 4.),
-                                 randomvariables.NormalRandomVariable(5., 3.)]
-        self.limit_state_function = lambda x: x[0] - x[1]
-        self.beta_true = (20.-5.) / np.sqrt(4**2+3**2) # beta = 3
-
-    def test_form_solver(self):
-        result = form_solver(self.limit_state_function, self.random_variables)
-        beta = result['beta']
-        self.assertAlmostEqual(beta, self.beta_true)
-
-
-
-if __name__ == "__main__":
-    unittest.main()

@@ -1,57 +1,16 @@
 # -*- coding: utf-8 -*-
-"""
-
-TODO:
-=====
-
-Sampler
--------
-- The sampler must support correlated variables.
-- The sampler must support crude/random sampling.
-- The sampler must support sampling of Morris trajectories.
-
-- The sampler should support a quasirandom sampling method, e.g BOSLHS, Sobol.
-
-Solver
-------
-- The package must provide a Monte Carlo solver function.
-
-- The MC solver should allow multiple CPU's to be used.
-- The MC solver should save the results to a file as we go.
-
-
-Sensitivity analysis
---------------------
-- The package must support variance based sensitivity analysis.
-- The package must support elementary effects (EE) sensitivity analysis.
-
-
-Testing
--------
-- Implement the reference case in 3.6 in Saltelli's primer book.
-
-
-The s
-- The sampler should support crude s
-- Write unit tests.
-- Sensitivity analysis, alpha factors at design point, global `Saltelli` indices.
-- Implement different sampling strategies, LHS, BOSLHS, Sobol sequence,
-  Hansol.
--
-
-"""
 import numpy as np
-import matplotlib.pyplot as plt
-import scipy.stats as stats
-import scipy.optimize as opt
-import scipy.misc as misc
-import itertools
-from randomvariables import *
-from utils import *
+if __package__ is None:
+    import sys
+    sys.path.append('../..')
+import unittest
+from relsis import *
+__all__ = ["find_sobol_sensitivity"]
 
 
-def find_sobol_sensitivity(func, X, y):
+def find_sensitivity_sobol(func, X, y):
     """Determine the first (S1) and total (ST) Sobol sensitivity indices.
+
 
     Arguments
     ---------
@@ -66,6 +25,11 @@ def find_sobol_sensitivity(func, X, y):
     y : ndarray
         Output of the limit state function corresponding to input from the
         design matrix.
+
+    Returns
+    -------
+    S1, ST : array
+        The first order and total Sobol sensitivity indices.
     """
     ntot, ndim = X.shape
     if X.shape[0] % 2 != 0:
@@ -94,8 +58,3 @@ def find_sobol_sensitivity(func, X, y):
         ST[i] = 1. - (np.inner(yB, yCi) / float(nsmp) - f02) / denom
         C[:, i] = B[:, i]
     return S1, ST
-
-
-if __name__ == '__main__':
-    # unittest.main()
-    pass
