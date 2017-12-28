@@ -4,6 +4,7 @@ import scipy.optimize
 import unittest
 import randomvariables
 
+
 def form_solver(limit_state_function, random_variables):
     """
     Evaluates the integral `limit_state_function(random_variables) <= 0` by

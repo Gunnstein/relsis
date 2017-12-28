@@ -2,11 +2,15 @@
 import numpy as np
 import unittest
 from randomvariables import UniformRandomVariable
-from sampling import crude_sampler
+import sampling
+import utils
+
 
 __all__ = ["monte_carlo_simulation"]
 
-def monte_carlo_simulation(func, random_variables, n_smp, corr_matrix=None):
+
+def monte_carlo_simulation(func, random_variables, n_smp, corr_matrix=None,
+                           sampling_method='crude', n_cpu=2):
     """Perform a MC simulation on function with random variables
 
     This function evaluates `func` by sampling the random variables `n_smp`
@@ -25,9 +29,19 @@ def monte_carlo_simulation(func, random_variables, n_smp, corr_matrix=None):
     n_smp : int
         The number of function evaluations to perform in the simulation
 
-    corr_matrix : ndarray
+    corr_matrix : Optional[ndarray]
         An square array with len(`random_variables`) dimensions defining the
-        correlation between the different random variables.
+        correlation between the different random variables. Only sampling
+        method available is `crude`.
+
+    sampling method : str
+        Sample method, possible values: `crude`, `sobol`, `latin_random`,
+                                        `latin_center`, `latin_edge`.
+
+        If `corr_matrix` is given, the sampling method overridden to `crude`.
+
+    n_cpu : int
+        The number of cpu's to use in the simulation.
 
     Returns
     -------
@@ -39,36 +53,67 @@ def monte_carlo_simulation(func, random_variables, n_smp, corr_matrix=None):
         The return values from the function evaluations.
     """
     n_dim = len(random_variables)
-    X0 = crude_sampler(n_smp, n_dim, corr_matrix)
+    n_strata = np.int(np.round(n_smp**(1./n_dim), 0))
+    if corr_matrix is not None:
+        sampling_method = 'crude'
+    if sampling_method == 'crude':
+        X0 = sampling.get_sample_crude(n_smp, n_dim, corr_matrix)
+    elif 'sobol':
+        X0 = sampling.get_sample_sobol(n_smp, n_dim)
+    elif 'latin_random':
+        X0 = sampling.get_sample_latin_random(n_strata, n_dim)
+    elif 'latin_center':
+        X0 = sampling.get_sample_latin_center(n_strata, n_dim)
+    elif 'latin_edge':
+        X0 = sampling.get_sample_latin_edge(n_strata, n_dim)
+    else:
+        raise ValueError("Sampling method not recognized.")
     X = np.array([Xi.ppf(X0[:, n])
                  for n, Xi in enumerate(random_variables)]).T
     y = np.array(map(func, X))
     return X, y
 
+
+def _circle(x):
+    return x[0]**2 + x[1]**2 - 1. / np.pi
+
+
+def _triangle(x):
+    return x[0] - x[1]
+
+
 class MonteCarloSimulationTestCase(unittest.TestCase):
-    def test_area_circle(self):
-        ls = lambda x: x[0]**2 + x[1]**2 - 1. / np.pi
+    def area_circle(self, sampling_method):
         random_variables = [UniformRandomVariable(0., 1.),
                             UniformRandomVariable(0., 1.)]
         true = 1.0
-        X, y = monte_carlo_simulation(ls, random_variables, 1e6)
+        X, y = monte_carlo_simulation(_circle, random_variables, 1e6,
+                                      sampling_method=sampling_method)
 
         estimated = float(y[y<=0].size) / float(y.size) * 4.
+        print estimated
         self.assertAlmostEqual(true, estimated, places=2,
                                msg="Monte Carlo integration failed.")
 
-    def test_area_triangle(self):
-        ls = lambda x: x[0] - x[1]
+    def area_triangle(self, sampling_method):
         random_variables = [UniformRandomVariable(0., np.sqrt(2)),
                             UniformRandomVariable(0., np.sqrt(2))]
         true = 1.
-        X, y = monte_carlo_simulation(ls, random_variables, 1e6)
+        X, y = monte_carlo_simulation(_triangle, random_variables, 1e5,
+                                      sampling_method=sampling_method)
 
         estimated = float(y[y<=0].size) / float(y.size) * 2
         self.assertAlmostEqual(true, estimated, places=2,
                                msg="Monte Carlo integration failed.")
 
+    def test_area_circle_crude(self):
+        self.area_circle('crude')
+
+    def test_area_circle_sobol(self):
+        self.area_circle('sobol')
+
 
 if __name__ == "__main__":
     unittest.main()
+
 
