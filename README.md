@@ -4,7 +4,7 @@ A package to perform reliability and sensitivity analysis in python (stresis). T
 
 ## Installation
 
-Download to your project directory, add `README.md`, and commit:
+Download to your computer, create a wheel and install the wheel, e.g:
 
 ```sh
 git clone https://github.com/gunnstein/relsis.git
