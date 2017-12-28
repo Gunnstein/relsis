@@ -7,28 +7,26 @@ A package to perform reliability and sensitivity analysis in python (stresis). T
 Download to your project directory, add `README.md`, and commit:
 
 ```sh
-curl -LO http://git.io/Xy0Chg
-git add README.md
-git commit -m "Use README Boilerplate"
+git clone https://github.com/gunnstein/relsis.git
+cd relsis
+python setup.py bdist_wheel -d dist
+pip install dist/relsis-X.Y.Z.whl
 ```
 
 ## Usage
 
-Replace the contents of `README.md` with your project's:
+The package includes modules for:
 
-- Name
-- Description
-- Installation instructions
-- Usage instructions
-- Support instructions
-- Contributing instructions
+- Crude and stratified (LHS, Sobol seq.) sampling of probability distributions.
+- Analyzing functions (Monte Carlo simulations and Most probable point (FORM))
+- Performing sensitivity analysis (Alpha factors, Method of Morris, Sobol variance decomposition)
 
-Feel free to remove any sections that aren't applicable to your project.
+The example (example.py) is a good place to start to get into the use of the package.
 
 ## Support
 
-Please [open an issue](https://github.com/fraction/readme-boilerplate/issues/new) for support.
+Please [open an issue](https://github.com/Gunnstein/relsis/issues/new) for support.
 
 ## Contributing
 
-Please contribute using [Github Flow](https://guides.github.com/introduction/flow/). Create a branch, add commits, and [open a pull request](https://github.com/fraction/readme-boilerplate/compare/).
+Please contribute using [Github Flow](https://guides.github.com/introduction/flow/). Create a branch, add commits, and [open a pull request](https://github.com/Gunnstein/relsis/compare/).
