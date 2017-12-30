@@ -10,7 +10,7 @@ __all__ = ["monte_carlo_simulation"]
 
 
 def monte_carlo_simulation(func, random_variables, n_smp, corr_matrix=None,
-                           sampling_method='crude', n_cpu=2):
+                           sampling_method='crude'):
     """Perform a MC simulation on function with random variables
 
     This function evaluates `func` by sampling the random variables `n_smp`
