@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import relsis
 
+
 # Define a limit state function to evaluate. Here we assume a additive model
 # with normally distributed variables
 def limit_state_func(x):
@@ -18,9 +19,9 @@ random_variables = [relsis.NormalRandomVariable(10., 1.),
 # The reliability index of the above problem can be determined analytically
 beta_true = (10. + 10. - 5. - 5.) / np.sqrt(1.**2 + 2.**2 + 3**2 + 4**2)
 
-# Perform a Monte Carlo simulation with Sobol sequence sampling
-X, y = relsis.monte_carlo_simulation(limit_state_func, random_variables, 1e5,
-                                     sampling_method='sobol')
+# Perform a Monte Carlo simulation with Sobol sequence sampling and 4 cpus
+X, y = relsis.monte_carlo_simulation(limit_state_func, random_variables, 1e6,
+                                     sampling_method='sobol', n_cpu=4)
 
 # Calculate probability of failure and the estimated reliability index
 pf = relsis.get_probability(y, y <= 0)
@@ -40,7 +41,8 @@ print s('FORM', beta_form)
 print s('Monte Carlo', beta_mc)
 
 # Perform Sobol sensitivity analysis on results from Monte Carlo simulation
-S1, ST = relsis.find_sensitivity_sobol(limit_state_func, X, y)
+# using 4 cpus
+S1, ST = relsis.find_sensitivity_sobol(limit_state_func, X, y, n_cpu=4)
 
 # Analytical first order sensitivity indices
 S1true = np.array([0.03, 0.13, 0.30, 0.53])

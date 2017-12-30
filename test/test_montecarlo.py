@@ -6,9 +6,10 @@ import unittest
 from relsis import *
 import numpy as np
 
-class MonteCarloSimulationTestCase(unittest.TestCase):
-    def _circle(self, x):
+def _circle(x):
         return x[0]**2 + x[1]**2 - 1. / np.pi
+
+class MonteCarloSimulationTestCase(unittest.TestCase):
 
     def area_circle(self, sampling_method):
         random_variables = [UniformRandomVariable(0., 1.),
@@ -17,7 +18,7 @@ class MonteCarloSimulationTestCase(unittest.TestCase):
         N = 1e5
         if sampling_method == 'crude':
             N = 1e6
-        X, y = monte_carlo_simulation(self._circle, random_variables, N,
+        X, y = monte_carlo_simulation(_circle, random_variables, N,
                                       sampling_method=sampling_method)
 
         estimated = float(y[y<=0].size) / float(y.size) * 4.
