@@ -75,8 +75,8 @@ class UniformRandomVariable(RandomVariable):
 
         Arguments
         ---------
-        mean, std : float
-            Mean and standard deviation of the variable
+        lower, upper : float
+            Bounds of the distribution
         """
         self.lower = lower
         self.upper = upper
@@ -116,32 +116,20 @@ class LognormalRandomVariable(RandomVariable):
         s = "Lognormally distributed random variable, LN({loc}, {scale})"
         return s.format(**self._kw)
 
-def SN_curve(S, dSc=71., m=5):
-    return 2e6 * (dSc/S) ** m
 
-if __name__ == '__main__':
-    import matplotlib.pyplot as plt
-    vx = .3
-    S = np.linspace(20, 2000)
-    N = SN_curve(S)
-    for s in [100., ]:
-        m = np.log(SN_curve(s))
-        mean_ln_x = m / (1. - 2.*vx)
-        std_ln_x = vx * mean_ln_x
-        lnorm = LognormalRandomVariable(mean_ln_x, std_ln_x)
-        ns = lnorm.pdf(N)
-        ns /= ns.max()
-        ns *= 100
-        ns += s
-        # ns = 10**np.log(ns)
+class DiscreteUniformRandomVariable(RandomVariable):
+    def __init__(self, lower, upper):
+        """Uniform discrete random variable.
 
-    plt.semilogx(N, S)
-    plt.semilogx(N, ns)
-    lnorm = LognormalRandomVariable(10., 1.)
-    y = lnorm.rvs(size=100000)
-    print np.log(y).std()
-    print np.log(y).mean()
-    plt.figure()
-    plt.hist(np.log(y), 100)
-    plt.show(block=True)
+        Defined by the lower (included) and upper (excluded) bounds.
 
+        Arguments
+        ---------
+        lower, upper : float
+            Bounds of the distribution
+        """
+        self._rv = stats.randint(lower, upper)
+
+    def __str__(self):
+        s = "Uniform discrete random variable"
+        return s
