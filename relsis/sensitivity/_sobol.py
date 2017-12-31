@@ -64,4 +64,6 @@ def find_sensitivity_sobol(func, X, y, n_cpu=1):
         S1[i] = (np.inner(yA, yCi) / float(nsmp) - f02) / denom
         ST[i] = 1. - (np.inner(yB, yCi) / float(nsmp) - f02) / denom
         C[:, i] = B[:, i]
+    pool.close()
+    pool.join()
     return S1, ST

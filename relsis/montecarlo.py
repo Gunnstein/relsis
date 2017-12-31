@@ -73,6 +73,8 @@ def monte_carlo_simulation(func, random_variables, n_smp, corr_matrix=None,
                  for n, Xi in enumerate(random_variables)]).T
     pool = multiprocessing.Pool(n_cpu)
     y = np.asfarray(pool.map(func, X))
+    pool.close()
+    pool.join()
     return X, y
 
 
