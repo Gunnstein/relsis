@@ -43,7 +43,7 @@ print s('Monte Carlo', beta_mc)
 # Perform Sobol sensitivity analysis on results from Monte Carlo simulation
 # using 4 cpus
 S1, ST, S1conf, STconf = relsis.find_sensitivity_sobol(limit_state_func, X, y,
-                                                    n_cpu=4, n_resamples=100)
+                                                    n_cpu=4, n_resample=100)
 
 
 # Analytical first order sensitivity indices

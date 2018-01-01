@@ -75,7 +75,7 @@ def find_sensitivity_sobol(func, X, y, n_resample=1000, conf_lvl=.95,
     STconf = np.zeros_like(S1)
 
 
-    S1s = np.zeros(n_resamples, np.float)
+    S1s = np.zeros(n_resample, np.float)
     STs = np.zeros_like(S1s)
     n_bootstrap = np.int(nsmp / (ndim + 2))
     z = scipy.stats.norm.ppf(0.5 + conf_lvl / 2.)
@@ -87,7 +87,7 @@ def find_sensitivity_sobol(func, X, y, n_resample=1000, conf_lvl=.95,
             yA, yAB, yB, var_y=var_y)
         AB[:, i] = A[:, i]
 
-        for j in xrange(n_resamples):
+        for j in xrange(n_resample):
             n = np.random.choice(nsmp, size=n_bootstrap)
             S1s[j], STs[j] = _first_and_totalorder_sensitivity_indices(
                 yA[n], yAB[n], yB[n])
