@@ -19,9 +19,9 @@ random_variables = [relsis.NormalRandomVariable(10., 1.),
 # The reliability index of the above problem can be determined analytically
 beta_true = (10. + 10. - 5. - 5.) / np.sqrt(1.**2 + 2.**2 + 3**2 + 4**2)
 
-# Perform a Monte Carlo simulation with Sobol sequence sampling and 4 cpus
-X, y = relsis.monte_carlo_simulation(limit_state_func, random_variables, 1e6,
-                                     sampling_method='sobol', n_cpu=4)
+# Perform a Monte Carlo simulation with LHS sampling and 4 cpus
+X, y = relsis.monte_carlo_simulation(limit_state_func, random_variables, 1e5,
+                                     sampling_method='latin_random', n_cpu=4)
 
 # Calculate probability of failure and the estimated reliability index
 pf = relsis.get_probability(y, y <= 0)
@@ -42,7 +42,9 @@ print s('Monte Carlo', beta_mc)
 
 # Perform Sobol sensitivity analysis on results from Monte Carlo simulation
 # using 4 cpus
-S1, ST = relsis.find_sensitivity_sobol(limit_state_func, X, y, n_cpu=4)
+S1, ST, S1conf, STconf = relsis.find_sensitivity_sobol(limit_state_func, X, y,
+                                                    n_cpu=4, n_resamples=100)
+
 
 # Analytical first order sensitivity indices
 S1true = np.array([0.03, 0.13, 0.30, 0.53])
@@ -57,4 +59,17 @@ for n, S1t, S1i, STi, ai in zip(range(S1.size), S1true, S1, ST, alpha_form**2):
     print "X{0:<2n}  {1:>6.3f}  {2:>6.3f} {3:>7.3f} {4:>7.3f}".format(
                                                         n+1, S1t, S1i, STi, ai)
 
+fig, [ax1, ax2] = plt.subplots(ncols=2, dpi=300)
+ax1.errorbar(range(1, 1+S1.size), S1, yerr=S1conf, fmt='o', capsize=2, ms=3)
+ax1.set(xlim=(0.5, S1.size+.5), ylim=(-.1, .75), ylabel="$S_1$",)
+plt.sca(ax1)
+plt.xticks(xrange(1, 1+S1.size),
+           ["$X_{0:n}$".format(n+1) for n in xrange(S1.size)])
 
+ax2.errorbar(range(1, 1+ST.size), ST, yerr=STconf, fmt='o', capsize=2, ms=3)
+ax2.set(xlim=(0.5, ST.size+.5), ylim=(-.1, .75), ylabel='$S_T$')
+plt.sca(ax2)
+plt.xticks(xrange(1, 1+S1.size),
+           ["$X_{0:n}$".format(n+1) for n in xrange(S1.size)])
+fig.tight_layout()
+plt.show(block=True)
