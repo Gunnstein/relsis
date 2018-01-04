@@ -15,7 +15,6 @@ def get_sample_latin_random(n_strata, n_dim):
     X += np.random.uniform(0.0, 1.0,
                            size=(n_strata**n_dim, n_dim)).astype(dtype)
     X /= np.float(n_strata)
-    np.random.shuffle(X)
     return X
 
 
@@ -29,7 +28,6 @@ def get_sample_latin_center(n_strata, n_dim):
     X = np.mgrid[[slice(n_strata)]*n_dim].T.reshape(-1, n_dim).astype(dtype)
     X += .5
     X /= np.float(n_strata)
-    np.random.shuffle(X)
     return X
 
 
@@ -42,7 +40,6 @@ def get_sample_latin_edge(n_strata, n_dim):
     dtype = np.float
     X = np.mgrid[[slice(n_strata)]*n_dim].T.reshape(-1, n_dim).astype(dtype)
     X /= np.float(n_strata-1)
-    np.random.shuffle(X)
     return X
 
 
@@ -62,7 +59,7 @@ if __name__ == "__main__":
         method = eval(method_name)
         X = method(3, 3)
         print X.shape
-        np.random.shuffle(X)
+
         print X.shape
         ax.scatter(X[:, 0], X[:, 1], X[:, 2], color=cols[n])
 

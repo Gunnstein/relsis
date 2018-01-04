@@ -71,10 +71,7 @@ def monte_carlo_simulation(func, random_variables, n_smp, corr_matrix=None,
         raise ValueError("Sampling method not recognized.")
     X = np.array([Xi.ppf(X0[:, n])
                  for n, Xi in enumerate(random_variables)]).T
-    pool = multiprocessing.Pool(n_cpu)
-    y = np.asfarray(pool.map(func, X))
-    pool.close()
-    pool.join()
+    y = utils._map(func, X, n_cpu)
     return X, y
 
 

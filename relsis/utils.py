@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 import scipy.stats as stats
+import multiprocessing
 
 def norm(x):
     return np.linalg.norm(x, ord=2)
@@ -9,6 +10,22 @@ def norm(x):
 def get_reliability_index(pf):
     return stats.norm.ppf(1-pf, loc=0., scale=1.)
 
+
+def _map(func, X, n_cpu=1):
+    """Standard map function capable of multiple processors.
+    """
+    if n_cpu == 'max':
+        n_cpu = multiprocessing.cpu_count()
+    if n_cpu == 1:
+        y = np.asfarray(map(func, X))
+    elif n_cpu > 1:
+        pool = multiprocessing.Pool(n_cpu)
+        y = np.asfarray(pool.map(func, X))
+        pool.close()
+        pool.join()
+    else:
+        raise ValueError("Could not determine the number of cpus to apply")
+    return y
 
 def get_probability(sample, cond):
     """Find the probability that the sample fullfills conditions.
