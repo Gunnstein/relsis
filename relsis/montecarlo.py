@@ -25,7 +25,7 @@ def monte_carlo_simulation(func, random_variables, n_smp, corr_matrix=None,
         it is not possible to use class methods or lambda functions.
 
     random_variables : array
-        An array of RandomVariable instances.
+        A list of RandomVariable instances.
 
     n_smp : int
         The number of function evaluations to perform in the simulation
@@ -69,8 +69,7 @@ def monte_carlo_simulation(func, random_variables, n_smp, corr_matrix=None,
         X0 = sampling.get_sample_latin_edge(n_strata, n_dim)
     else:
         raise ValueError("Sampling method not recognized.")
-    X = np.array([Xi.ppf(X0[:, n])
-                 for n, Xi in enumerate(random_variables)]).T
+    X = utils.find_quantile_transform(X0, random_variables)
     y = utils._map(func, X, n_cpu)
     return X, y
 

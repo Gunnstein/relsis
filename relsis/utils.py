@@ -27,6 +27,30 @@ def _map(func, X, n_cpu=1):
         raise ValueError("Could not determine the number of cpus to apply")
     return y
 
+
+def find_quantile_transform(X, random_variables):
+    """Find the quantile transformation of the design matrix
+
+    Transform the columns of the design matrix `X`, defined in the unit
+    hyper-cube, to the distribution function of the random variables specified
+    in `random_variables.
+
+    Arguments
+    ---------
+    X : ndarray
+        The design matrix defined in the unit hypercube.
+    random_variables : list
+        A list of RandomVariable instances.
+
+    Returns
+    -------
+    ndarray
+        The design matrix containing the realizations of the random variables.
+    """
+    return np.array([Xi.ppf(X[:, n])
+                    for n, Xi in enumerate(random_variables)]).T
+
+
 def get_probability(sample, cond):
     """Find the probability that the sample fullfills conditions.
 
@@ -55,15 +79,6 @@ def truncate_prob_dist(x):
     eps = np.finfo(dtype).eps
     x[x<epsneg] = epsneg
     x[x>1.-eps] = 1.-eps
-
-
-def q2x(X, random_variables):
-    """Transforms the matrix X from [0, 1]-space to the random variable space.
-
-    `X` is a (m x n)-array and `random_variables` is a (1xn)-array.
-    """
-    return np.array([Xi.ppf(X[:, n])
-                 for n, Xi in enumerate(random_variables)]).T
 
 
 class SobolTestFunction:

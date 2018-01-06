@@ -96,7 +96,7 @@ def find_elementary_effects(func, random_variables, trajectory):
     k = len(random_variables)
     EE = np.zeros(k, dtype=np.float)
     g = np.zeros(k, dtype=np.float)
-    X = utils.q2x(trajectory, random_variables)
+    X = utils.find_quantile_transform(trajectory, random_variables)
     g = map(func, X)
     for l in xrange(k):
         dtj = trajectory[l+1] - trajectory[l]
