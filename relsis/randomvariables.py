@@ -3,7 +3,8 @@ import numpy as np
 import scipy.stats as stats
 
 __all__ = ["RandomVariable", "NormalRandomVariable", "UniformRandomVariable",
-           "LognormalRandomVariable", "DiscreteUniformRandomVariable"]
+           "LognormalRandomVariable", "DiscreteUniformRandomVariable",
+           "BetaDistribution"]
 
 
 class RandomVariable:
@@ -132,4 +133,31 @@ class DiscreteUniformRandomVariable(RandomVariable):
 
     def __str__(self):
         s = "Uniform discrete random variable"
+        return s
+
+
+class BetaDistribution(RandomVariable):
+    def __init__(self, alpha, beta, lower=0., upper=1.):
+        """Beta distribution in the range from lower to upper.
+
+        The beta distribution can take on a range of different shapes, the most
+        important ones may be:
+            alpha > beta > 1.0 : positively skewed
+            beta > alpha > 1.0 : negatively skewed
+            alpha = beta > 1.0 : symmetric
+            alpha = beta = 1.0 : uniform distribution
+
+        Arguments
+        ---------
+        alpha, beta : float
+            The shape parameters of the beta distributions.
+        upper, lower : float
+            Bounds of the distribution
+        """
+        self._rv = stats.beta(alpha, beta, loc=lower, scale=upper-lower)
+        self._kw = dict(a=alpha, b=beta, loc=lower, scale=upper-lower,
+                        upper=upper, lower=lower)
+
+    def __str__(self):
+        s = "Beta distributed variable with bounds"
         return s
