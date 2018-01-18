@@ -11,8 +11,7 @@ from relsis import *
 __all__ = ["find_sobol_sensitivity"]
 
 
-def find_sensitivity_sobol(func, X, y, n_resample=1000, conf_lvl=.95,
-                           n_cpu=1):
+def find_sensitivity_sobol(func, X, y, n_resample=500, alpha=5.0, n_cpu=1):
     """Determine the first (S1) and total (ST) Sobol sensitivity indices.
 
     The estimators recommended in [Saltelli2010] are used for the first and
@@ -23,7 +22,7 @@ def find_sensitivity_sobol(func, X, y, n_resample=1000, conf_lvl=.95,
     generate a (Nx2d) matrix, where each row is spaced over [0, 1], the
     sample/resample matrix is then the half of the columns for each of them.
 
-    Bootstrapping is used to determine the confidence intervals.
+    Empirical bootstrapping is used to determine the confidence intervals.
 
     Arguments
     ---------
@@ -40,12 +39,13 @@ def find_sensitivity_sobol(func, X, y, n_resample=1000, conf_lvl=.95,
         Output of the limit state function corresponding to input from the
         design matrix.
 
-    n_resample : int
-        The number of time to bootstrapa resamples for confidence interval
-        estimate.
+    n_resample : Optional[int]
+        The number of bootstrap resamples for confidence interval estimate.
+        If n_resample <= 0, will not be performed and the the function returns
+        None for S1conf and STconf
 
-    conf_lvl : float
-        The confidence level for the confidence interval.
+    alpha : Optional[float]
+        The significance level (in percent) for the confidence interval.
 
     n_cpu : Optional[int or 'str']
         The number of cpu's to use in the simulation. If 'max' is specified,
@@ -56,6 +56,8 @@ def find_sensitivity_sobol(func, X, y, n_resample=1000, conf_lvl=.95,
     S1, ST, S1conf, STconf: array
         The first order and total Sobol sensitivity indices and the estimates
         for the confidence intervals.
+        If n_resample <= 0, will not be performed and the the function returns
+        None for S1conf and STconf
     """
     ntot, ndim = X.shape
     if X.shape[0] % 2 != 0:
@@ -71,20 +73,20 @@ def find_sensitivity_sobol(func, X, y, n_resample=1000, conf_lvl=.95,
     B = X[n[nsmp:]]
 
     var_y = np.var(y[:ntot])
-
     AB = A.copy()
-
-
     S1 = np.zeros(ndim, dtype=np.float)
-    S1conf = np.zeros_like(S1)
     ST = np.zeros_like(S1)
-    STconf = np.zeros_like(S1)
 
-
-    S1s = np.zeros(n_resample, np.float)
-    STs = np.zeros_like(S1s)
-    n_bootstrap = np.int(nsmp / (ndim + 2))
-    z = scipy.stats.norm.ppf(0.5 + conf_lvl / 2.)
+    bootstrap = n_resample > 0
+    if bootstrap:
+        S1conf = np.zeros((ndim, 2), dtype=np.float)
+        STconf = np.zeros_like(S1conf)
+        S1s = np.zeros(n_resample, dtype=np.float)
+        STs = np.zeros_like(S1s)
+        nl = np.round(alpha/200. * n_resample).astype(np.int)
+        nu = np.round(1. - alpha/200. * n_resample).astype(np.int)
+    else:
+        S1conf, STconf = None, None
 
     for i in xrange(ndim):
         AB[:, i] = B[:, i]
@@ -93,13 +95,17 @@ def find_sensitivity_sobol(func, X, y, n_resample=1000, conf_lvl=.95,
             yA, yAB, yB, var_y=var_y)
         AB[:, i] = A[:, i]
 
-        for j in xrange(n_resample):
-            n = np.random.choice(nsmp, size=n_bootstrap)
-            S1s[j], STs[j] = _first_and_totalorder_sensitivity_indices(
-                yA[n], yAB[n], yB[n])
+        if bootstrap:
+            for j in xrange(n_resample):
+                n = np.random.choice(nsmp, size=nsmp)
+                S1sj, STsj = _first_and_totalorder_sensitivity_indices(
+                    np.take(yA, n), np.take(yAB, n), np.take(yB, n))
+                S1s[j], STs[j] = S1sj - S1[i], STsj - ST[i]
 
-        S1conf[i] = z * S1s.std()
-        STconf[i] = z * S1s.std()
+            S1s, STs = np.sort(S1s), np.sort(STs)
+            S1conf[i, :] = np.array([S1s[nl], S1s[nu]])
+            STconf[i, :] = np.array([STs[nl], STs[nu]])
+
     return S1, ST, S1conf, STconf
 
 

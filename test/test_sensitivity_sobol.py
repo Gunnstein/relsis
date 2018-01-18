@@ -23,7 +23,8 @@ class TestFindSensitivitySobol(unittest.TestCase):
                                                 sampling_method='latin_center')
 
     def test_linear(self):
-        S1, ST, __, __ = find_sensitivity_sobol(func, self.X, self.y)
+        S1, ST, __, __ = find_sensitivity_sobol(func, self.X, self.y,
+                                                n_resample=None)
         np.testing.assert_almost_equal(ST, self.S_linear_true, 2)
         np.testing.assert_almost_equal(S1, self.S_linear_true, 2)
         self.assertAlmostEqual(np.sum(S1), 1.0, places=1)

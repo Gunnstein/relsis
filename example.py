@@ -43,7 +43,7 @@ print s('Monte Carlo', beta_mc)
 # Perform Sobol sensitivity analysis on results from Monte Carlo simulation
 # using 4 cpus
 S1, ST, S1conf, STconf = relsis.find_sensitivity_sobol(limit_state_func, X, y,
-                                                    n_cpu=4, n_resample=100)
+                                                    n_cpu=4, n_resample=1000)
 
 
 # Analytical first order sensitivity indices
@@ -60,13 +60,17 @@ for n, S1t, S1i, STi, ai in zip(range(S1.size), S1true, S1, ST, alpha_form**2):
                                                         n+1, S1t, S1i, STi, ai)
 
 fig, [ax1, ax2] = plt.subplots(ncols=2, dpi=300)
-ax1.errorbar(range(1, 1+S1.size), S1, yerr=S1conf, fmt='o', capsize=2, ms=3)
+S1ci = S1conf.T
+S1ci[0] *= -1.
+ax1.errorbar(range(1, 1+S1.size), S1, yerr=S1ci, fmt='o', capsize=2, ms=3)
 ax1.set(xlim=(0.5, S1.size+.5), ylim=(-.1, .75), ylabel="$S_1$",)
 plt.sca(ax1)
 plt.xticks(xrange(1, 1+S1.size),
            ["$X_{0:n}$".format(n+1) for n in xrange(S1.size)])
 
-ax2.errorbar(range(1, 1+ST.size), ST, yerr=STconf, fmt='o', capsize=2, ms=3)
+STci = STconf.T
+STci[0] *= -1.
+ax2.errorbar(range(1, 1+ST.size), ST, yerr=STci, fmt='o', capsize=2, ms=3)
 ax2.set(xlim=(0.5, ST.size+.5), ylim=(-.1, .75), ylabel='$S_T$')
 plt.sca(ax2)
 plt.xticks(xrange(1, 1+S1.size),
