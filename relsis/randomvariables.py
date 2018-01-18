@@ -130,10 +130,11 @@ class DiscreteUniformRandomVariable(RandomVariable):
             Bounds of the distribution
         """
         self._rv = stats.randint(lower, upper)
+        self._kw = dict(lower=lower, upper=upper)
 
     def __str__(self):
-        s = "Uniform discrete random variable"
-        return s
+        s = "Uniform discrete random variable with bounds [{lower}, {upper}>."
+        return s.format(**self._kw)
 
 
 class BetaDistribution(RandomVariable):
@@ -159,5 +160,24 @@ class BetaDistribution(RandomVariable):
                         upper=upper, lower=lower)
 
     def __str__(self):
-        s = "Beta distributed variable with bounds"
-        return s
+        s = "Beta distribution a={a}, b={b} and bounds [{lower}, {upper}]."
+        return s.format(**self._kw)
+
+
+class TriangularDistribution(RandomVariable):
+    def __init__(self, lower, upper, mode):
+        """Triangular distribution from lower to upper with specified mode.
+
+        Arguments
+        ---------
+        upper, lower, mode : float
+            Bounds and mode of the distribution
+        """
+        c = (mode - lower) / (upper - lower)
+        self._rv = stats.triang(c, loc=lower, scale=upper-lower)
+        self._kw = dict(loc=lower, scale=upper-lower, c=mode, mode=mode,
+                        lower=lower, upper=upper)
+
+    def __str__(self):
+        s = "Triangular distribution, mode={mode} and bounds[{lower}, {upper}]"
+        return s.format(**self._kw)
