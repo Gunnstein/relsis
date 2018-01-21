@@ -3,6 +3,17 @@ import numpy as np
 import scipy.stats as stats
 import multiprocessing
 
+
+def ci2err(ci):
+    """Convert confidence interval into upper and lower error for matplotlib.
+
+    """
+    yerr = np.copy(ci)
+    yerr = yerr.T
+    yerr[0] *= -1.
+    return yerr
+
+
 def norm(x):
     return np.linalg.norm(x, ord=2)
 
