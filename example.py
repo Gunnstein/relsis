@@ -7,7 +7,7 @@ import relsis
 # Define a limit state function to evaluate. Here we assume a additive model
 # with normally distributed variables
 def limit_state_func(x):
-    return np.sum(2*x)
+    return np.sum(x)
 
 
 # Define the random variables
@@ -21,7 +21,7 @@ beta_true = (10. + 10. - 5. - 5.) / np.sqrt(1.**2 + 2.**2 + 3**2 + 4**2)
 
 # Perform a Monte Carlo simulation with LHS sampling and 4 cpus
 X, y = relsis.monte_carlo_simulation(limit_state_func, random_variables, 1e5,
-                                     sampling_method='latin_random', n_cpu=4)
+                                     sampling_method='crude', n_cpu=1)
 
 # Calculate probability of failure and the estimated reliability index
 pf = relsis.get_probability(y, y <= 0)
