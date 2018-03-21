@@ -2,7 +2,7 @@
 from setuptools import setup, find_packages
 
 setup(name='relsis',
-      version='0.3.1',
+      version='0.3.2',
       url='https://github.com/Gunnstein/relsis',
       license='MIT',
       description='Package for reliability and sensitivity analysis, relsis.',
@@ -10,5 +10,5 @@ setup(name='relsis',
       author_email='gunnstein.t.froseth@ntnu.no',
       packages=find_packages(exclude=["test"]),
       install_requires=[
-        'numpy>=1.0']
+        'numpy', 'scipy']
      )

@@ -5,6 +5,11 @@ __pycache__/
 
 # My stuff
 *.pdf
+relsis/bin
+relsis/include
+requirements.txt
+relsis/pip-selfcheck.json
+
 
 # C extensions
 *.so
