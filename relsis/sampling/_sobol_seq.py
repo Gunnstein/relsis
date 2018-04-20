@@ -14,8 +14,8 @@
 
     Original code is available from http://people.sc.fsu.edu/~jburkardt/py_src/sobol/sobol.html
 """
-
-from __future__ import division
+from __future__ import (division, print_function, absolute_import,
+                        unicode_literals)
 import numpy as np
 from scipy.stats import norm
 

@@ -9,8 +9,7 @@ Download to your computer, create a wheel and install the wheel, e.g:
 ```sh
 git clone https://github.com/gunnstein/relsis.git
 cd relsis
-python setup.py bdist_wheel -d dist
-pip install dist/relsis-X.Y.Z.whl
+pip install .
 ```
 
 ## Usage

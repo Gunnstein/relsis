@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
-if __package__ is None:
-    import sys
-    sys.path.append('../')
-import unittest
+from __future__ import (division, print_function, absolute_import,
+                        unicode_literals)
 from relsis import *
+import unittest
 import numpy as np
 
 def _circle(x):

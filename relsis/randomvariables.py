@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import (division, print_function, absolute_import,
+                        unicode_literals)
 import numpy as np
 import scipy.stats as stats
 
@@ -183,8 +185,7 @@ class TriangularDistribution(RandomVariable):
         s = "Triangular distribution, mode={mode} and bounds[{lower}, {upper}]"
         return s.format(**self._kw)
 
+
 if __name__ == "__main__":
-    X = LognormalRandomVariable(5., 2.)
-    x = X.rvs(size=10000000)
-    print X.std, x.std()
-    print X.mean, x.mean()
+    d = NormalRandomVariable(0., 1.)
+    print(d.rvs())

@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
-if __package__ is None:
-    import sys
-    sys.path.append('../')
-import unittest
+from __future__ import (division, print_function, absolute_import,
+                        unicode_literals)
 from relsis import *
+import unittest
 from relsis.sensitivity._morris import (find_morris_trajectory,
-                                        find_elementary_effects)
+                                          find_elementary_effects)
 import numpy as np
 
 

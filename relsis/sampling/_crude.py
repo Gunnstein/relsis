@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import (division, print_function, absolute_import,
+                        unicode_literals)
 import numpy as np
 import scipy.stats as stats
 
@@ -33,7 +35,3 @@ def get_sample_crude(n_smp, n_dim, corr_matrix=None):
                                            size=int(n_smp))
         x = stats.norm.cdf(Nx, loc=0., scale=1)
     return x
-
-
-if __name__ == "__main__":
-    print "ready to go"

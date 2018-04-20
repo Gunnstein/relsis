@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
+from __future__ import (division, print_function, absolute_import,
+                        unicode_literals)
 import numpy as np
 import scipy.optimize
-import randomvariables
 
 
 def form_solver(limit_state_function, random_variables):

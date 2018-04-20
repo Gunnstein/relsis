@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import (division, print_function, absolute_import,
+                        unicode_literals)
 import numpy as np
 import scipy.stats as stats
 import multiprocessing
@@ -28,7 +30,7 @@ def _map(func, X, n_cpu=1):
     if n_cpu == 'max':
         n_cpu = multiprocessing.cpu_count()
     if n_cpu == 1:
-        y = np.asfarray(map(func, X))
+        y = np.asfarray(list(map(func, X)))
     elif n_cpu > 1:
         pool = multiprocessing.Pool(n_cpu)
         y = np.asfarray(pool.map(func, X))
@@ -121,6 +123,3 @@ class SobolTestFunction:
         """
         a = self.a
         return np.product((np.abs(4 * x - 2) + a)/(1 + a))
-
-if __name__ == "__main__":
-    print "ready to go"

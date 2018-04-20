@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
+from __future__ import (division, print_function, absolute_import,
+                        unicode_literals)
 import numpy as np
-import unittest
-from randomvariables import UniformRandomVariable
 import multiprocessing
-import sampling
-import utils
+from .sampling import *
+from .utils import find_quantile_transform, _map
 
 __all__ = ["monte_carlo_simulation"]
 
@@ -58,19 +58,19 @@ def monte_carlo_simulation(func, random_variables, n_smp, corr_matrix=None,
     if corr_matrix is not None:
         sampling_method = 'crude'
     if sampling_method == 'crude':
-        X0 = sampling.get_sample_crude(n_smp, n_dim, corr_matrix)
+        X0 = get_sample_crude(n_smp, n_dim, corr_matrix)
     elif sampling_method == 'sobol':
-        X0 = sampling.get_sample_sobol(n_smp, n_dim)
+        X0 = get_sample_sobol(n_smp, n_dim)
     elif sampling_method == 'latin_random':
-        X0 = sampling.get_sample_latin_random(n_strata, n_dim)
+        X0 = get_sample_latin_random(n_strata, n_dim)
     elif sampling_method == 'latin_center':
-        X0 = sampling.get_sample_latin_center(n_strata, n_dim)
+        X0 = get_sample_latin_center(n_strata, n_dim)
     elif sampling_method == 'latin_edge':
-        X0 = sampling.get_sample_latin_edge(n_strata, n_dim)
+        X0 = get_sample_latin_edge(n_strata, n_dim)
     else:
         raise ValueError("Sampling method not recognized.")
-    X = utils.find_quantile_transform(X0, random_variables)
-    y = utils._map(func, X, n_cpu)
+    X = find_quantile_transform(X0, random_variables)
+    y = _map(func, X, n_cpu)
     return X, y
 
 

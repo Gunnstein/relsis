@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import (division, print_function, absolute_import,
+                        unicode_literals)
 import numpy as np
 
 __all__ = ['get_sample_latin_random', 'get_sample_latin_center',
@@ -48,8 +50,6 @@ if __name__ == "__main__":
     from mpl_toolkits.mplot3d import Axes3D
     import itertools
 
-
-
     fig = plt.figure(dpi=300)
     ax = fig.add_subplot(111, projection='3d')
     cols = ['k','r', 'b', 'g']
@@ -58,9 +58,7 @@ if __name__ == "__main__":
             continue
         method = eval(method_name)
         X = method(3, 3)
-        print X.shape
-
-        print X.shape
+        print(X.shape)
         ax.scatter(X[:, 0], X[:, 1], X[:, 2], color=cols[n])
 
     fig.tight_layout()

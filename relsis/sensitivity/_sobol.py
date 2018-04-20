@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
+from __future__ import (division, print_function, absolute_import,
+                        unicode_literals)
 import numpy as np
 import scipy
-if __package__ is None:
-    import sys
-    sys.path.append('../..')
 import unittest
-from relsis import *
+from .. import *
 
 
 __all__ = ["find_sobol_sensitivity"]
@@ -41,8 +40,8 @@ def find_sensitivity_sobol(func, X, y, n_resample=500, alpha=5.0, n_cpu=1):
 
     n_resample : Optional[int]
         The number of bootstrap resamples for confidence interval estimate.
-        If n_resample <= 0, will not be performed and the the function returns
-        None for S1conf and STconf
+        If n_resample <= 0, bootstrap will not be performed and the the
+        function returns None for S1conf and STconf
 
     alpha : Optional[float]
         The significance level (in percent) for the confidence interval.
@@ -59,13 +58,15 @@ def find_sensitivity_sobol(func, X, y, n_resample=500, alpha=5.0, n_cpu=1):
         If n_resample <= 0, will not be performed and the the function returns
         None for S1conf and STconf
     """
+    if n_resample is None:
+        n_resample = -1
     ntot, ndim = X.shape
     if X.shape[0] % 2 != 0:
         Warning("The number of samples is not even, dropping one point!")
         ntot -= 1
     n = np.arange(0, ntot).astype(np.int)
     np.random.shuffle(n)
-    nsmp = ntot / 2
+    nsmp = int(ntot / 2)
 
     yA = y[n[:nsmp]]
     yB = y[n[nsmp:]]
@@ -88,7 +89,7 @@ def find_sensitivity_sobol(func, X, y, n_resample=500, alpha=5.0, n_cpu=1):
     else:
         S1conf, STconf = None, None
 
-    for i in xrange(ndim):
+    for i in range(ndim):
         AB[:, i] = B[:, i]
         yAB = utils._map(func, AB, n_cpu)
         S1[i], ST[i] = _first_and_totalorder_sensitivity_indices(
@@ -96,7 +97,7 @@ def find_sensitivity_sobol(func, X, y, n_resample=500, alpha=5.0, n_cpu=1):
         AB[:, i] = A[:, i]
 
         if bootstrap:
-            for j in xrange(n_resample):
+            for j in range(n_resample):
                 n = np.random.choice(nsmp, size=nsmp)
                 S1sj, STsj = _first_and_totalorder_sensitivity_indices(
                     np.take(yA, n), np.take(yAB, n), np.take(yB, n))

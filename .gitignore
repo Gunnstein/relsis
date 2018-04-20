@@ -9,7 +9,9 @@ relsis/bin
 relsis/include
 requirements.txt
 relsis/pip-selfcheck.json
-
+literature/
+venv2/
+venv3/
 
 # C extensions
 *.so

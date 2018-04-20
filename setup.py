@@ -2,7 +2,7 @@
 from setuptools import setup, find_packages
 
 setup(name='relsis',
-      version='0.3.2',
+      version='0.3.3',
       url='https://github.com/Gunnstein/relsis',
       license='MIT',
       description='Package for reliability and sensitivity analysis, relsis.',

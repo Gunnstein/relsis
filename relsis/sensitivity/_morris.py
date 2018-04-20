@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import (division, print_function, absolute_import,
+                        unicode_literals)
 import numpy as np
 from .. import randomvariables
 from .. import utils
@@ -83,7 +85,7 @@ def find_trajectories(n_trajec, n_dim, n_lvl, n_jump=None):
     r = int(n_trajec)
     n_cand = r
     candidates = np.zeros((n_cand, k+1, k))
-    for i in xrange(n_cand):
+    for i in range(n_cand):
         candidates[i] = find_morris_trajectory(k, p, n_jump)
 
     return candidates
@@ -97,8 +99,8 @@ def find_elementary_effects(func, random_variables, trajectory):
     EE = np.zeros(k, dtype=np.float)
     g = np.zeros(k, dtype=np.float)
     X = utils.find_quantile_transform(trajectory, random_variables)
-    g = map(func, X)
-    for l in xrange(k):
+    g = list(map(func, X))
+    for l in range(k):
         dtj = trajectory[l+1] - trajectory[l]
         n = np.argmax(np.abs(dtj))
         delta = dtj[n]
