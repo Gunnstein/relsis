@@ -22,6 +22,10 @@ The package includes modules for:
 
 The example (example.py) is a good place to start to get into the use of the package.
 
+## Acknowledgements
+
+The code of `sampling/_sobol_seq` module is mainly authored by Corrado Chisari and John Burkardt and distributed under the MIT license. Their contribution is gratefully acknowledged. Please check out the original implementation at https://people.sc.fsu.edu/~jburkardt/py_src/sobol/sobol.html 
+
 ## Support
 
 Please [open an issue](https://github.com/Gunnstein/relsis/issues/new) for support.
