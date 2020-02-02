@@ -7,7 +7,7 @@ import unittest
 from .. import *
 
 
-__all__ = ["find_sobol_sensitivity"]
+__all__ = ["find_sensitivity_sobol"]
 
 
 def find_sensitivity_sobol(func, X, y, n_resample=500, alpha=5.0, n_cpu=1):
